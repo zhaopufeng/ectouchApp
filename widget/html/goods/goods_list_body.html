@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/common.css" />
+		<style type="text/css">
+		.aui-list-view .aui-img-object {
+		    max-width: 80px;
+		    height: 80px;
+		    line-height: 80px;
+		}
+		</style>
+	</head>
+	<body>
+		<div class="aui-content">
+	        <ul class="aui-list-view" id='list'>
+
+
+	          </ul>
+	      </div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/common.js"></script>
+	<script type="text/javascript" src="../../script/zepto.min.js"></script>
+	<script type="text/javascript" src="../../script/echo.min.js"></script>
+	<script type="text/javascript">
+
+		function openGoods(id){
+			var productid = id;
+			if(!productid){
+				return false;
+			}
+			var values = {
+				productid:productid
+			};
+			openWinto('goods_show_win','../goods/goods_show_win',values);
+		}
+		apiready = function() {
+
+			var list = $('#list');
+			var li = '';
+
+			api.ajax({
+			    url: CESHIURL + '/Api/Product/lists',
+			    method: 'post',
+			    data: {
+			        values: {
+			            cat_id: api.pageParam.cat_id
+			        }
+			    }
+			},function(ret, err){
+			    if (ret) {
+			        var prolist = ret.pro;
+							for(var i in prolist){
+
+								li += '<li class="aui-list-view-cell aui-img aui-counter-list" tapmode onclick="openGoods('+prolist[i].goods_id+');"><img class="aui-img-object aui-pull-left" src="'+prolist[i].goods_thumb+'" data-echo="'+prolist[i].goods_thumb+'"><div class="aui-img-body"><div class="aui-text-default aui-ellipsis-1"> '+prolist[i].goods_name+'</div><span class="aui-carfont aui-ellipsis-1"> '+prolist[i].intro+'</span><div class="aui-counter-box"><div class="aui-pull-left aui-text-danger">'+prolist[i].shop_price+'</div><div class="aui-text-default aui-pull-right"></div></div></div></li>';
+							}
+							list.html(li);
+							echo.init({
+								offset : 100,
+								throttle : 250,
+								unload : false,
+								callback : function(element, op) {
+								}
+							});
+			    } else {
+			        alert( JSON.stringify( err ) );
+			    }
+			});
+			api.parseTapmode();
+		};
+	</script>
+</html>

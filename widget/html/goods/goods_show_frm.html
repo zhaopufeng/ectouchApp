@@ -1,0 +1,309 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    <style type="text/css">
+    .aui-content,
+    .aui-content-padded {
+        background: #ffffff;
+
+    }
+    .display-none{display:none}
+    .thumb {
+        position: relative;
+        max-height: 280px;
+        overflow: hidden;
+        margin-bottom: 0;
+    }
+    .thumb > img {
+        width: 100%;
+    }
+    .price-info {
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background: rgba(255,153,0,0.6);
+        height: 55px;
+
+    }
+    .price {
+        margin-left: 15px;
+        color: #ffffff;
+        font-size: 16px;
+        line-height: 55px;
+    }
+    .price strong {
+        font-size: 26px;
+        margin: 0 5px;
+        font-weight: 400;
+    }
+    .price-info .aui-pull-right {
+        height: 55px;
+        width: 35%;
+        background: rgba(255,204,0,0.6);
+        padding-top: 10px;
+        text-align: center;
+    }
+    .price-info .aui-pull-right p {
+        color: #ff6600;
+        font-size: 12px;
+        margin-bottom: 0px;
+    }
+    .goods-basic-info {
+        padding: 10px;
+        overflow: hidden;
+    }
+    .goods-title {
+        margin-bottom: 5px;
+    }
+    .aui-tab-nav li.active {
+        color: #ff9900;
+        border-bottom: 2px #ff9900 solid;
+    }
+    .info {
+        padding: 10px;
+        overflow: hidden;
+        margin-bottom: 0;
+    }
+    .info img {
+        width: 100%;
+    }
+    .info p {
+        color: #666;
+    }
+    .aui-btn{margin:5px;font-size:12px;padding:4px 6px;}
+    .aui-guige{display: -webkit-box;padding:6px;}
+    .aui-avatar{ border-radius: 50%; }
+    .aui-list-view i.aui-iconfont {
+	    padding: 0px;
+	    top:-2px;
+	    border-radius:0px;
+	    margin:0;
+	    color: #e74c3c;
+	    font-size: 14px;
+	}
+	.aui-list-view-cell {
+    position: relative;
+    padding: 12px 2px;
+    overflow: hidden;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-touch-callout: none;
+}
+.aui-label{display: inline-block}
+    </style>
+</head>
+<body>
+    <section class="aui-content thumb">
+        <img src="" id='img'>
+        <div class="price-info">
+            <span class="price">￥<strong id='shop_price'></strong>元</span>
+            <div class="aui-pull-right">
+                <p style="text-decoration:line-through" id='market_price'></p>
+            </div>
+        </div>
+        <input type='hidden' name='goods_id' id='goods_id' value=''/>
+    </section>
+
+    <section class="aui-content goods-basic-info" id='attr'>
+        <div class="goods-title" id='name'></div>
+        <!--<h5 class="goods-title"></h5>-->
+        <p>
+            <label class="aui-label aui-label-danger">库存</label>
+            <label class="aui-label aui-label-success" id='count'></label>
+        </p>
+        <div class="aui-counter aui-pull-left">
+            <div class="aui-counter-minus aui-disabled" onclick="plusnum();"></div>
+            <input class="aui-counter-input" type="text" value="1" readOnly id='number'>
+            <div class="aui-counter-plus" onclick="addnum();"></div>
+        </div>
+    </section>
+
+
+
+    <section class="aui-tab">
+        <ul class="aui-tab-nav" id="demo1">
+            <li class="active">产品详情</li>
+            <li>产品参数</li>
+        </ul>
+    </section>
+    <!--这个是商品描述-->
+    <section class="aui-content info con-pl " id='goods_desc'>
+
+    </section>
+    <!--这个是评价-->
+    <section class="aui-content info con-pl display-none">
+        <ul class="aui-list-view" id='canshu'>
+
+        </ul>
+    </section>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/echo.min.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript">
+
+		Zepto(function() {
+			$(".aui-tab-nav").on("tap", "li", function() {
+				 $('.aui-tab-nav li').removeClass('active');
+				 $(this).addClass('active');
+				 var $ul = $('.con-pl');
+                 var $t = $(this).index();
+                 $ul.css('display','none');
+				 $ul.eq($t).css('display','block');
+			});
+    });
+    function select(itemid,id){
+      $("#attr_"+itemid+" button").each(function(){
+        $(this).addClass('aui-btn-outlined');
+      });
+      $('#deta_'+id).removeClass('aui-btn-outlined');
+      var obj = $api.byId('spec_' + itemid);
+      $api.val(id);
+    }
+    function addnum(){
+      var num = $api.byId('number');
+      var number = parseInt($api.val(num))+1;
+      $api.val(num,number);
+    }
+    function plusnum(){
+      var num = $api.byId('number');
+      var number = parseInt($api.val(num))-1;
+      if(number<1){
+        number = 1;
+      }
+      $api.val(num,number);
+    }
+    function addCart(){
+      var user = $api.getStorage('user');
+      if(user){
+        var userid = user.userid;
+      }else{
+        api.toast({
+            msg: '请先登录',
+            duration: 2000,
+            location: 'bottom'
+        });
+        return;
+      }
+      var num = $('#number').val();
+      var spec = $api.domAll('.guige');
+      var spec_arr = '';
+      var quick = 0;
+      var ptype = 'addcart';
+      var goods_id = $api.val($api.byId('goods_id'));
+      if (spec != 'undefined' && spec.length > 0) {
+        //提示选择完整规格
+        for(var i in spec){
+          if($api.val(spec[i]) == ''){
+            alert('请选择规格');
+          }else{
+            spec_arr += $api.val(spec[i]) + ',';
+          }
+        }
+        //已选择规格
+        spec_arr = spec_arr.substring(0,spec_arr.length-1);
+        var quick = 1;
+      }
+      api.ajax({
+        url: CESHIURL + '/Api/Shopping/add',
+        method: 'post',
+        data:{
+          values:{
+            uid: userid,
+            goods_id: goods_id,
+            number: num,
+            quick:quick,
+            spec:spec_arr
+          }
+        }
+      },function(ret,err){
+        if(ret){
+          if(ret.status == 1){
+            alert('加入购物车成功');
+          }else{
+            alert(ret.err);
+          }
+        }else{
+          alert( JSON.stringify( err ) );
+        }
+      });
+    }
+    apiready = function(){
+    api.ajax({
+        url: CESHIURL + '/Api/Product/index',
+        method: 'post',
+        data: {
+            values: {
+                pro_id: api.pageParam.productid
+            }
+        }
+    },function(ret, err){
+        if (ret) {
+            var pro = ret.pro;
+            var attrValueList=ret.properties.spe;
+            var canValueList=ret.properties.pro;
+            var img = $('#img');
+            var goods_id = $api.byId('goods_id');
+            var shop_price = $('#shop_price');
+            var market_price = $('#market_price');
+            var name = $('#name');
+            var count = $('#count');
+            var attr = $('#attr');
+            var goods_desc = $('#goods_desc');
+            var canshu = $('#canshu');
+            var attrlist = '';
+            var canlist = '';
+            img.attr('src',pro.goods_img);
+            $api.val(goods_id,pro.goods_id);
+            shop_price.text(pro.shop_price);
+            market_price.text('市场价：' + pro.market_price);
+            name.text(pro.goods_name);
+            count.text(pro.goods_number);
+            goods_desc.html(pro.goods_desc);
+            if(attrValueList != 'undefined' && attrValueList){
+              for(var i in attrValueList){
+                attrlist += '<div class="aui-content aui-col-xs-12 aui-guige"><p class="aui-col-xs-4 aui-text-center" style="padding:8px 5px;">'+attrValueList[i].name+'</p><div class="aui-col-xs-8" id="attr_'+attrValueList[i].id+'">';
+                var values = attrValueList[i].values;
+                if(values != 'undefined' && values){
+                  for(var j in values){
+                    var type = values[j].checked == true ? '' : 'aui-btn-outlined';
+                    attrlist += '<button class="aui-btn aui-btn-success '+type+'" id="deta_'+values[j].id+'" onclick=select('+attrValueList[i].id+','+values[j].id+')>'+values[j].label+'</button>';
+                  }
+                }
+                val = values.slice(0,1);
+                attrlist += '</div></div><input type="hidden" name="spec_"'+attrValueList[i].id+' value="'+val[0].id+'" class="guige" id="spec_'+attrValueList[i].id+'"/>';
+              }
+            }
+            attr.after(attrlist);
+            if(canValueList != 'undefined' && canValueList){
+              for(var k in canValueList){
+                for(var m in canValueList[k]){
+                  canlist += '<li class="aui-list-view-cell aui-img"><p>'+canValueList[k][m].name+'：'+canValueList[k][m].value+'</p></li>';
+                }
+
+              }
+            }
+            canshu.html(canlist);
+            echo.init({
+          			offset : 100,
+          			throttle : 250,
+          			unload : false,
+          			callback : function(element, op) {
+          			}
+          	});
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+
+    api.parseTapmode();
+    }
+</script>
+</html>

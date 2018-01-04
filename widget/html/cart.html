@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		    <style type="text/css">
+		   .aui-checkbox {
+			    width: 20px;
+			    height: 20px;
+			    position: relative;
+			    margin: 8px 15px;
+			    background: #ffffff;
+			    border: solid 1px #dddddd;
+			    border-radius: 4px;
+			    display: table;
+			    float: left;
+			    -webkit-appearance: none;
+			    transition: background-color ease 0.1s;
+			}
+			.aui-counter-box {
+			    width: 100%;
+			    padding: 0;
+			    line-height: 26px;
+			}
+			.aui-list-view .aui-img-object {
+		    max-width: 70px;
+		    height: 70px;
+		    line-height: 70px;
+			}
+
+			.aui-list-view-cell:last-child:after {
+			  	left:0;
+			}
+			.aui-list-view-cell:after {
+				left: 15px;
+			}
+			.aui-list-view-cell:active{
+	background: #fff;
+}
+.aui-nav .aui-bar-tab {
+        background: #34495E;
+    }
+    .aui-nav .aui-bar-tab li .aui-iconfont,
+    .aui-nav .aui-bar-tab li p {
+        color: #fff;
+    }
+    .aui-nav .aui-bar-tab li.active .aui-iconfont,
+    .aui-nav .aui-bar-tab li.active p {
+        color: #14bd7c;
+    }
+    .aui-nav {
+        background: #ff9900;
+        font-size: 18px;
+        color: #fff;
+        text-align: center;
+    }
+    .aui-nav  div {
+        height: 55px;
+    }
+    .aui-nav .buy {
+        line-height: 55px;
+    }
+    .blue {
+        background: #fff;
+    }
+    .blue .aui-iconfont,
+    .blue p {
+        color: #999;
+    }
+    .buy{background:#FF9800;}
+.aui-input-row:first-child:after {
+    border-top: 0px solid #c8c7cc;}
+    .aui-input-row .aui-input-addon{width:auto;}
+    .aui-input-row:last-child:after {
+    border-bottom: 0px solid #000;
+}
+    .heji{font-size:14px; vertical-align: middle;white-space: nowrap; line-height:55px;}
+		  </style>
+	</head>
+	<body>
+		<!--<div class="aui-tips aui-tips-warning">
+	        <div class="aui-tips-content aui-arrow-right aui-ellipsis-1 aui-text-777776">
+	            <i class="aui-iconfont aui-icon-notificationfill"></i>
+	            消息提示条消息提示条消息提示条消息提示条消息提示条
+	        </div>
+	    </div>-->
+		<div class="aui-content">
+        <ul class="aui-list-view" id='carts'>
+
+				</ul>
+    </div>
+	<footer class="aui-nav" id="aui-footer">
+        <div class="aui-col-xs-12">
+            <div class="aui-col-xs-4 blue" id="collection-btn" tapmode="">
+                <div class="aui-input-row">
+	                <input class="aui-radio aui-radio-warning" type="radio" name="demo">
+	                <label class="aui-input-addon">全选</label>
+	            </div>
+            </div>
+            <div class="aui-col-xs-4 blue aui-text-danger heji"  tapmode="">
+						合计:￥ <span id="total_money"></span>元
+	        </div>
+            <div class="aui-col-xs-4 buy"  tapmode="">
+						结算（<span id="main"></span>）
+	        </div>
+        </div>
+    </footer>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../script/zepto.min.js"></script>
+	<script type="text/javascript" src="../script/echo.min.js"></script>
+	<script type="text/javascript">
+
+		function plus(cart_id){
+			if(!cart_id){
+				return;
+			}
+			var num = $api.val($api.byId('number'));
+			if(num <= 1){
+				$api.val($api.byId('number'),1);
+				return;
+			}
+			num --;
+			var user = $api.getStorage('user');
+			if(user){
+				var userid = user.userid;
+				api.ajax({
+				    url: CESHIURL+'/Api/Shopping/up_cart',
+				    method: 'post',
+				    data: {
+				        values: {
+				            user_id: userid,
+										num: num,
+										cart_id:cart_id
+				        }
+				    }
+				},function(ret, err){
+				    if (ret) {
+				        if(ret.status == 1){
+									$api.val($api.byId('number'),num);
+									var total_money = ret.goods_amount;
+									var number = ret.total_number;
+									var money = $('#total_money');
+									var total_number = $('#main');
+									money.text(total_money);
+									total_number.text(number);
+								}
+				    } else {
+				        alert( JSON.stringify( err ) );
+				    }
+				});
+
+			}
+		}
+		function add(cart_id){
+			if(!cart_id){
+				return;
+			}
+			var num = $api.val($api.byId('number'));
+			num ++;
+			var user = $api.getStorage('user');
+			if(user){
+				var userid = user.userid;
+				api.ajax({
+				    url: CESHIURL+'/Api/Shopping/up_cart',
+				    method: 'post',
+				    data: {
+				        values: {
+				            user_id: userid,
+										num: num,
+										cart_id:cart_id
+				        }
+				    }
+				},function(ret, err){
+				    if (ret) {
+				        if(ret.status == 1){
+									
+									$api.val($api.byId('number'),num);
+									var total_money = ret.goods_amount;
+									var number = ret.total_number;
+									var money = $('#total_money');
+									var total_number = $('#main');
+									money.text(total_money);
+									total_number.text(number);
+								}
+				    } else {
+				        alert( JSON.stringify( err ) );
+				    }
+				});
+
+			}
+		}
+		apiready = function() {
+			var user = $api.getStorage('user');
+			if(user){
+				var userid = user.userid;
+				api.ajax({
+				    url: CESHIURL+'/Api/Shopping/index',
+				    method: 'post',
+				    data: {
+				        values: {
+				            user_id: userid
+				        }
+				    }
+				},function(ret, err){
+				    if (ret) {
+				        var carts = ret.cart.goods_list;
+								var total = ret.cart.total;
+								var ul = $('#carts');
+								var total_money = $('#total_money');
+								var total_number = $('#main');
+								var li = '';
+								for(var i in carts){
+									li += '<li class="aui-list-view-cell aui-img aui-counter-list"><input class="aui-pull-left aui-checkbox aui-checkbox-danger" type="checkbox"><img class="aui-img-object aui-pull-left" src="'+carts[i].goods_thumb+'" data-echo="'+carts[i].goods_thumb+'"><div class="aui-img-body"><div class="aui-text-default aui-ellipsis-1"> '+carts[i].goods_name+'</div><div class="aui-counter-box"><div class="aui-pull-left aui-text-danger">￥ '+carts[i].goods_price+'元</div><div class="aui-counter aui-pull-right"><div class="aui-counter-minus aui-disabled" onclick="plus('+carts[i].rec_id+')"></div><input class="aui-counter-input" type="text" value="'+carts[i].goods_number+'" readOnly id="number"><div class="aui-counter-plus" onclick="add('+carts[i].rec_id+');"></div></div></div></div><div style="float:right"><input type="button" value="删除" onclik="delete()"/></div></li>';
+								}
+								ul.html(li);
+								total_money.text(total.goods_amount);
+								total_number.text(total.total_number);
+				    } else {
+				        alert( JSON.stringify( err ) );
+				    }
+				});
+			}
+
+
+			api.parseTapmode();
+		}
+	</script>
+</html>
