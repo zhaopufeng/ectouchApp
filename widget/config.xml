@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<widget id="A6060592641998" version="0.0.1"> 
+<widget id="A6060592641998" version="0.0.1">
   <name>tanchiguo</name>
   <description>ectouchAPP</description>
-  <author email="289373433@qq.com" href="http://www.apicloud.com">宁飞</author>
+  <author email="289373433@qq.com" href="http://www.apicloud.com">dinofei</author>
   <content src="index.html"/>
   <preference name="pageBounce" value="false"/>
   <preference name="appBackground" value="rgba(0,0,0,0.0)"/>
